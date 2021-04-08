@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
-class UnitChoises(models.Choices):
+class UnitChoises(models.TextChoices):
     GRAMS = 'г'
     MILLILITRES = 'мл'
     TABLES_SPOON = 'ст.л'
@@ -26,10 +26,14 @@ class TagChoises(models.Choices):
     DINNER = 'Ужин'
 
 
+def user_directory_path(instance, filename):
+    return f'recipies/{instance.author.username}/{filename}'
+
+
 class Recipe(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=50)
-    image = models.ImageField()
+    image = models.ImageField(upload_to=user_directory_path)
     description = models.CharField(max_length=300)
     ingredients = models.ManyToManyField(Ingredient)
     tag = models.CharField(choices=TagChoises.choices, default=TagChoises.LUNCH, max_length=7)
