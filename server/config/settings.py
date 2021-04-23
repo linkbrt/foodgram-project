@@ -14,6 +14,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
+
 
 # Application definition
 
@@ -24,7 +28,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'users',
     'foodgram',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'api',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -35,8 +44,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
+AUTH_USER_MODEL = 'users.Profile'
 ROOT_URLCONF = 'config.urls'
 
 TEMPLATES_DIR = BASE_DIR.parent / 'templates'
@@ -110,3 +121,17 @@ STATIC_URL = '/static/'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media/'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        # 'rest_framework.authentication.TokenAuthentication',
+    ),
+}
+
+DOMAIN_NAME = 'foodgram.com'
+DEFAULT_FROM_EMAIL = 'confirm@' + DOMAIN_NAME
+
+EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+EMAIL_FILE_PATH = BASE_DIR / "sent_emails"

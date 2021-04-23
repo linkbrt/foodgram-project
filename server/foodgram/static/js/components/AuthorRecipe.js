@@ -1,11 +1,11 @@
 class AuthorRecipe extends MainCards{
-    constructor(container, card, counter, api, userAuth,button) {
-        super(container, card, counter, api, userAuth,button);
+    constructor(container, card, counter, api, user,button) {
+        super(container, card, counter, api, user,button);
         this.tooltipAdd = this.tooltipAdd.bind(this);
         this.tooltipDel = this.tooltipDel.bind(this)
     }
-    _eventUserAuth (e) {
-        super._eventUserAuth(e);
+    _eventUser (e) {
+        super._eventUser(e);
         if (this.target && this.target.name === 'purchases') {
             this._eventPurchases(this.target)
         }
@@ -14,12 +14,6 @@ class AuthorRecipe extends MainCards{
         }
         if (this.target && this.target.name === 'subscribe') {
             this._eventSubscribe(this.target)
-        }
-    }
-    _eventUserNotAuth  (e)  {
-        super._eventUserAuth(e);
-        if (this.target && this.target.name === 'purchases') {
-            this._eventPurchases(this.target)
         }
     }
     _eventSubscribe  (target)  {

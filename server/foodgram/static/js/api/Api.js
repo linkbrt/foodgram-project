@@ -1,125 +1,114 @@
+function getCookie(c_name)
+{
+    if (document.cookie.length > 0)
+    {
+        c_start = document.cookie.indexOf(c_name + "=");
+        if (c_start != -1)
+        {
+            c_start = c_start + c_name.length + 1;
+            c_end = document.cookie.indexOf(";", c_start);
+            if (c_end == -1) c_end = document.cookie.length;
+            return unescape(document.cookie.substring(c_start,c_end));
+        }
+    }
+    return "";
+}
 
 class Api {
     constructor(apiUrl) {
         this.apiUrl =  apiUrl;
+        this.headers = {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCookie("csrftoken"),
+        };
     }
-  getPurchases () {
-    return fetch(`/purchases`, {
+  async getPurchases() {
+    const e = await fetch(`${this.apiUrl}/purchases/`, {
       headers: {
         'Content-Type': 'application/json'
       }
-    })
-      .then( e => {
-          if(e.ok) {
-              return e.json()
-          }
-          return Promise.reject(e.statusText)
-      })
+    });
+    if (e.ok) {
+      return e.json();
+    }
+    return await Promise.reject(e.statusText);
   }
-  addPurchases (id) {
-    return fetch(`/purchases`, {
+  async addPurchases(id) {
+    const e = await fetch(`${this.apiUrl}/purchases/`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: this.headers,
       body: JSON.stringify({
-        id: id
+        recipe: id
       })
-    })
-      .then( e => {
-          if(e.ok) {
-              return e.json()
-          }
-          return Promise.reject(e.statusText)
-      })
+    });
+    if (e.ok) {
+      return e.json();
+    }
+    return await Promise.reject(e.statusText);
   }
-  removePurchases (id){
-    return fetch(`/purchases/${id}`, {
+  async removePurchases(id) {
+    const e = await fetch(`${this.apiUrl}/purchases/${id}/`, {
       method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then( e => {
-          if(e.ok) {
-              return e.json()
-          }
-          return Promise.reject(e.statusText)
-      })
+      headers: this.headers,
+    });
+    if (e.ok) {
+      return e.json();
+    }
+    return await Promise.reject(e.statusText);
   }
-  addSubscriptions(id) {
-    return fetch(`/subscriptions`, {
+  async addSubscriptions(username) {
+    const e = await fetch(`${this.apiUrl}/subscribe/`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: this.headers,
       body: JSON.stringify({
-        id: id
+        author: username
       })
-    })
-      .then( e => {
-          if(e.ok) {
-              return e.json()
-          }
-          return Promise.reject(e.statusText)
-      })
+    });
+    if (e.ok) {
+      return e.json();
+    }
+    return await Promise.reject(e.statusText);
   }
-  removeSubscriptions (id) {
-    return fetch(`/subscriptions/${id}`, {
+  async removeSubscriptions(id) {
+    const e = await fetch(`${this.apiUrl}/subscribe/${id}/`, {
       method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then( e => {
-          if(e.ok) {
-              return e.json()
-          }
-          return Promise.reject(e.statusText)
-      })
+      headers: this.headers,
+    });
+    if (e.ok) {
+      return e.json();
+    }
+    return await Promise.reject(e.statusText);
   }
-  addFavorites (id)  {
-    return fetch(`/favorites`, {
+  async addFavorites(id) {
+    const e = await fetch(`${this.apiUrl}/favorites/`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: this.headers,
       body: JSON.stringify({
-        id: id
+        recipe: id
       })
-    })
-        .then( e => {
-            if(e.ok) {
-                return e.json()
-            }
-            return Promise.reject(e.statusText)
-        })
+    });
+    if (e.ok) {
+      return e.json();
+    }
+    return await Promise.reject(e.statusText);
   }
-  removeFavorites (id) {
-    return fetch(`/favorites/${id}`, {
+  async removeFavorites (id) {
+    const e = await fetch(`${this.apiUrl}/favorites/${id}/`, {
       method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-        .then( e => {
-            if(e.ok) {
-                return e.json()
-            }
-            return Promise.reject(e.statusText)
-        })
+      headers: this.headers,
+    });
+    if (e.ok) {
+      return e.json();
+    }
+    return await Promise.reject(e.statusText);
   }
-    getIngredients  (text)  {
-        return fetch(`/ingredients?query=${text}`, {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-            .then( e => {
-                if(e.ok) {
-                    return e.json()
-                }
-                return Promise.reject(e.statusText)
-            })
+    async getIngredients(text) {
+        const e = await fetch(`${this.apiUrl}/ingredients/?query=${text}`, {
+          headers: this.headers,
+      });
+      if (e.ok) {
+        return e.json();
+      }
+      return await Promise.reject(e.statusText);
     }
 }

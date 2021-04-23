@@ -1,6 +1,6 @@
 class MyFollow extends MainCards{
-    _eventUserAuth (e) {
-        super._eventUserAuth(e);
+    _eventUser (e) {
+        super._eventUser(e);
         if (this.target && this.target.name === 'subscribe') {
             this._eventSubscribe(this.target)
         }

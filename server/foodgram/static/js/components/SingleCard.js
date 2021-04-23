@@ -1,11 +1,11 @@
 class SingleCard extends MainCards{
-    constructor(container, card, counter, api, userAuth,button) {
-        super(container, card, counter, api, userAuth,button);
+    constructor(container, card, counter, api, user, button) {
+        super(container, card, counter, api, user, button);
         this.tooltipAdd = this.tooltipAdd.bind(this);
         this.tooltipDel = this.tooltipDel.bind(this)
     }
-    _eventUserAuth (e) {
-        super._eventUserAuth(e);
+    _eventUser(e) {
+        super._eventUser(e);
         if (this.target && this.target.name === 'purchases') {
             this._eventPurchases(this.target)
         }
@@ -16,13 +16,8 @@ class SingleCard extends MainCards{
             this._eventSubscribe(this.target)
         }
     }
-    _eventUserNotAuth  (e)  {
-        super._eventUserAuth(e);
-        if (this.target && this.target.name === 'purchases') {
-            this._eventPurchases(this.target)
-        }
-    }
-    _eventSubscribe  (target)  {
+
+    _eventSubscribe(target)  {
         const authorId = target.closest(this.card).getAttribute('data-author');
         if(target.hasAttribute('data-out')) {
             this.button.subscribe.addSubscribe(target, authorId)
@@ -30,23 +25,23 @@ class SingleCard extends MainCards{
             this.button.subscribe.removeSubscribe(target,authorId)
         }
     }
-    _eventFavorites  (target)  {
+    _eventFavorites(target)  {
         const cardId = target.closest(this.card).getAttribute('data-id');
         if(target.hasAttribute('data-out')) {
-            this.button.favorites.addFavorites(target,cardId, this.tooltipDel)
+            this.button.favorites.addFavorites(target, cardId, this.tooltipDel)
         } else {
-            this.button.favorites.removeFavorites(target,cardId, this.tooltipAdd)
+            this.button.favorites.removeFavorites(target, cardId, this.tooltipAdd)
         }
     }
-    tooltipAdd  () {
+    tooltipAdd() {
         const item = this.target.closest('.single-card').querySelector('.single-card__favorite-tooltip');
         item.textContent = "Добавить в избранное"
     }
-    tooltipDel () {
+    tooltipDel() {
         const item = this.target.closest('.single-card__favorite').querySelector('.single-card__favorite-tooltip');
         item.textContent = "Убрать из избранного"
     }
-    _eventPurchases  (target)  {
+    _eventPurchases(target)  {
         const cardId = target.closest(this.card).getAttribute('data-id');
         if(target.hasAttribute('data-out')) {
             this.button.purchases.addPurchases(target,cardId,this.counter.plusCounter)

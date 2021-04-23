@@ -46,6 +46,5 @@ const singleCard = new SingleCard(container, '.single-card', header, api, true,{
     favorites,
     subscribe
 });
+
 singleCard.addEvent();
-
-
