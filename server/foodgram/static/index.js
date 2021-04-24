@@ -35,3 +35,13 @@ const cardList = new CardList(container, '.card', header, api, true, {
 });
 
 cardList.addEvent();
+
+const urlParams = new URLSearchParams(window.location.search);
+
+function setURLParams(){
+    urlParams.set('breakfast', 'on');
+    window.location.search = urlParams;
+};
+
+let btn = document.getElementById('lunch_button');
+btn.addEventListener('click', setURLParams);

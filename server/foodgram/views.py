@@ -1,34 +1,40 @@
 from django.core.paginator import Paginator
 from django.http.request import HttpRequest
 from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib.auth import decorators
 
 from .models import Ingredient, IngredientRecipe, Recipe, Tag, User
 from .forms import RecipeForm
+from .filters import RecipeFilter
 from .recipe_logic.utils import set_ingredients_to_recipe, set_tags_to_recipe
 
 
 def index(request: HttpRequest):
-    if not request.user.is_authenticated:
-        return render(
-            request=request,
-            template_name='foodgram/index.html'
-        )
     recipe_list = Recipe.objects.all()
     paginator = Paginator(recipe_list, 6)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
-    purchases_list = request.user.purchases.select_related('recipe')
-    result = [purchase.recipe for purchase in purchases_list]
+
+    # Я не знаю как сделать фильтр на странице, именно html как оформить
+    # И сессию я тоже пока не сделал, проверяйте все остальное)))
+    if not request.user.is_authenticated:
+        session = dict(request.session)
+        session.setdefault('purchases_counter', 5)
+        purchases_counter = session.get('purchases_counter', 0)
+    else:    
+        purchases_list = request.user.purchases.select_related('recipe')
+        purchases_counter = [purchase.recipe for purchase in purchases_list]
     return render(
         request=request,
         template_name='foodgram/index.html',
         context={
             'page': page,
             'paginator': paginator,
-            'purchases': result,
+            'purchases': purchases_counter,
         }
     )
 
+@decorators.login_required
 def shopping_list(request: HttpRequest):
     result = Recipe.objects.filter(purchase__in=request.user.purchases.all())
     return render(

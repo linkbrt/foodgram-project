@@ -10,9 +10,11 @@
             <li class="nav__item {% if shop_list %}nav__item_active{% endif %}">
                 <a href="{% url 'shopping-list' %}" class="nav__link link">
                     Список покупок 
-                    <span class="badge badge_style_blue nav__badge" id="counter">
-                        {{ user.purchases.count }}
-                    </span>
+                    {% if purchases %}
+                        <span class="badge badge_style_blue nav__badge" id="counter">
+                            {{ purchases }}
+                        </span>
+                    {% endif %}
                 </a>
             </li>
         {% if user.is_authenticated %}
