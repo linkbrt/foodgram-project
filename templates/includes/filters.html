@@ -1,17 +1,10 @@
+{% load tags %}
 <ul class="tags">
-    <li class="tags__item">
-        <a id="breakfast" class="tags__checkbox tags__checkbox_style_orange"
-            href="{% url 'index' %}?tag=breakfast"></a>
-        <span class="tags__label">Завтрак</span>
-        <!-- <input name="breakfast" value="on" type="hidden"> -->
-    </li>
-    <li class="tags__item">
-        <a id="lunch_button" class="tags__checkbox tags__checkbox_style_green tags__checkbox_active" href="?dinner=on"></a>
-        <span for="lunch" class="tags__label">Обед</span>
-    </li>
-    <li class="tags__item">
-        <a id="dinner" class="tags__checkbox tags__checkbox_style_purple tags__checkbox_active"
-            href="?lunch=on"></a>
-        <label for="dinner" class="tags__label">Ужин</label>
-    </li>
+    {% for tag in all_tags %}
+        <li class="tags__item">
+            <a id="{{tag.name}}" class="tags__checkbox tags__checkbox_style_{{ tag.style }} {{ tags|get_item:tag.name }}"
+                href="?{% url_params_replace page=page.number tag=tag.name  %}"></a>
+            <span class="tags__label">{{ tag.name }}</span>
+        </li>
+    {% endfor %}
 </ul>

@@ -1,3 +1,4 @@
+{% if page.has_other_pages %}
 <nav class="pagination" aria-label="Переключение страниц">
     <ul class="pagination__container">
         {% if page.has_previous %}
@@ -29,3 +30,4 @@
         {% endif %}
     </ul>
 </nav> 
+{% endif %}

@@ -12,12 +12,12 @@
                         <p class="recipe__text"><span class="icon-time"></span>{{ recipe.cooking_time }}</p>
                     </div>
                 </li>
-            {% if forloop.counter == 3 %}
+            {% endfor %}
+            {% if author.recipes.count > 3 %}
                 <li class="card-user__item">
-                    <a href="{% url 'user-page' author.username %}" class="card-user__link link">Еще...</a>
+                    <a href="{% url 'user-page' author.username %}" class="card-user__link link">Еще {{ author.recipes.count|add:"-3" }} рецептов...</a>
                 </li>
             {% endif %}
-            {% endfor %}
         </ul>
     </div>
     <div class="card-user__footer">

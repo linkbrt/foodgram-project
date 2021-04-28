@@ -1,11 +1,11 @@
-{% extends '../base.html' %}
+{% extends './base.html' %}
 
 {% block title %}Мои подписки{% endblock %}
 {% load static %}
 {% block stylesheet %}{% static './pages/myFollow.css' %}{% endblock %}
 
 {% block nav %}
-    {% include 'includes/nav.html' with follow=True %}
+    {% include 'includes/nav.html' %}
 {% endblock %}
 
 {% block main %}
@@ -20,7 +20,6 @@
     {% include 'includes/paginator.html' with page=page %}
 {% endblock %}
 
-{% include 'includes/footer.html' %}
 {% block scripts %}
     <script src="{% static './js/config/config.js' %}"></script>
     <script src="{% static './js/components/MainCards.js' %}"></script>

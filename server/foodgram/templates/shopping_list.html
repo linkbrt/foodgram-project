@@ -1,11 +1,11 @@
-{% extends '../base.html' %}
+{% extends './base.html' %}
 
 {% block title %}Список покупок{% endblock %}
 {% load static %}
 {% block stylesheet%}{% static './pages/shopList.css' %}{% endblock %}
 
 {% block nav %}
-    {% include 'includes/nav.html' with shop_list=True %}
+    {% include 'includes/nav.html' %}
 {% endblock %}
 
 {% block main %}
@@ -14,7 +14,7 @@
     </div>
     <div class="card-list card-list_column">
         <ul class="shopping-list">
-        {% for recipe in result %}
+        {% for recipe in page %}
             {% include 'includes/card-inline.html' with recipe=recipe %}
         {% endfor %}
         <button class="button button_style_blue">Скачать список</button>

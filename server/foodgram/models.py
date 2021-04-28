@@ -1,22 +1,11 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.utils.text import slugify
+from django.core import validators
+
+from .services import user_directory_path, pretty_slugify
 
 
 User = get_user_model()
-
-
-class UnitChoises(models.TextChoices):
-    GRAMS = 'г'
-    MILLILITRES = 'мл'
-    TABLES_SPOON = 'ст.л'
-    PINCH = 'щепотка'
-    TO_TASTE = 'по вкусу'
-    ITEM = 'шт'
-
-
-class Unit(models.Model):
-    title = models.CharField(max_length=10)
 
 
 class Ingredient(models.Model):
@@ -29,13 +18,10 @@ class Ingredient(models.Model):
 
 class Tag(models.Model):
     name = models.CharField(max_length=15)
+    style = models.CharField(max_length=100)
 
     def __str__(self) -> str:
         return self.name
-
-
-def user_directory_path(instance, filename):
-    return f'recipies/{instance.author.username}/{filename}'
 
 
 class Recipe(models.Model):
@@ -45,17 +31,12 @@ class Recipe(models.Model):
     description = models.CharField(max_length=300)
     ingredients = models.ManyToManyField(Ingredient, through='IngredientRecipe')
     tags = models.ManyToManyField(Tag)
-    cooking_time = models.IntegerField(validators=[])
+    cooking_time = models.IntegerField(validators=[validators.MinValueValidator(0), validators.MaxValueValidator(1000)])
     slug = models.SlugField(unique=True, auto_created=True)
     pub_date = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs) -> None:
-        self.slug = self.title.translate(
-            str.maketrans(
-        "абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ",
-        "abvgdeejzijklmnoprstufhzcss_y_euaABVGDEEJZIJKLMNOPRSTUFHZCSS_Y_EUA")
-        )
-        self.slug = slugify(self.slug)
+        self.slug = pretty_slugify(title=self.title)
         super().save(*args, **kwargs)
 
     class Meta:
@@ -65,4 +46,4 @@ class Recipe(models.Model):
 class IngredientRecipe(models.Model):
     ingredient = models.ForeignKey(to=Ingredient, on_delete=models.SET_NULL, null=True)
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
-    quantity = models.IntegerField()
+    quantity = models.IntegerField(validators=[validators.MinValueValidator(0), validators.MaxValueValidator(10000)])

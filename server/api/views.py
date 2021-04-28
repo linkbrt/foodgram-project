@@ -1,18 +1,29 @@
 from django.http.response import JsonResponse
-from django.shortcuts import render
 from rest_framework import status, viewsets
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import Favorite, Follow, Purchase
-from .serializers import FavoriteSerializer, FollowSerializer, PurchaseSerializer
+from .serializers import (FavoriteSerializer, FollowSerializer,
+                          PurchaseSerializer)
 
 from foodgram.models import Ingredient
 
 
+SUCCESS_RESPONSE = Response(
+    data={'success': 'true'}, 
+    status=status.HTTP_200_OK
+)
+
+BAS_RESPONSE = Response(
+    data={'success': 'false'},
+    status=status.HTTP_400_BAD_REQUEST
+)
+
+
 class PurchasesViewSet(viewsets.ModelViewSet):
     serializer_class = PurchaseSerializer
-    permission_classes = (AllowAny, )
+    permission_classes = (IsAuthenticated, )
 
     def get_queryset(self):
         return Purchase.objects.filter(user=self.request.user)
@@ -21,11 +32,10 @@ class PurchasesViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             self.perform_create(serializer)
-            headers = self.get_success_headers(serializer.data)
-            return Response(data={'success': 'true'}, status=status.HTTP_200_OK, headers=headers)
+            return SUCCESS_RESPONSE
         if "non_field_errors" in serializer._errors:
-            return Response(data={'success': 'true'}, status=status.HTTP_200_OK)
-        return Response(data={'success': 'false'}, status=status.HTTP_400_BAD_REQUEST)
+            return SUCCESS_RESPONSE
+        return BAS_RESPONSE
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -34,12 +44,12 @@ class PurchasesViewSet(viewsets.ModelViewSet):
         instance = self.get_queryset().filter(recipe__pk=kwargs['pk'])
         if instance:
             instance.delete()
-            return Response(data={'success': 'true'}, status=status.HTTP_200_OK)
-        return Response(data={'success': 'false'}, status=status.HTTP_400_BAD_REQUEST)
+            return SUCCESS_RESPONSE
+        return BAS_RESPONSE
 
 class FavoriteViewSet(viewsets.ModelViewSet):
     serializer_class = FavoriteSerializer
-    permission_classes = (AllowAny, )
+    permission_classes = (IsAuthenticated, )
 
     def get_queryset(self):
         return Favorite.objects.filter(user=self.request.user)
@@ -48,11 +58,10 @@ class FavoriteViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             self.perform_create(serializer)
-            headers = self.get_success_headers(serializer.data)
-            return Response(data={'success': 'true'}, status=status.HTTP_200_OK, headers=headers)
+            return SUCCESS_RESPONSE
         if "non_field_errors" in serializer._errors:
-            return Response(data={'success': 'true'}, status=status.HTTP_200_OK)
-        return Response(data={'success': 'false'}, status=status.HTTP_400_BAD_REQUEST)
+            return SUCCESS_RESPONSE
+        return BAS_RESPONSE
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -61,12 +70,12 @@ class FavoriteViewSet(viewsets.ModelViewSet):
         instance = self.get_queryset().filter(recipe__pk=kwargs['pk'])
         if instance:
             instance.delete()
-            return Response(data={'success': 'true'}, status=status.HTTP_200_OK)
-        return Response(data={'success': 'false'}, status=status.HTTP_400_BAD_REQUEST)
+            return SUCCESS_RESPONSE
+        return BAS_RESPONSE
 
 class FollowViewSet(viewsets.ModelViewSet):
     serializer_class = FollowSerializer
-    permission_classes = (AllowAny, )
+    permission_classes = (IsAuthenticated, )
 
     def get_queryset(self):
         return Follow.objects.filter(user=self.request.user)
@@ -75,11 +84,10 @@ class FollowViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             self.perform_create(serializer)
-            headers = self.get_success_headers(serializer.data)
-            return Response(data={'success': 'true'}, status=status.HTTP_200_OK, headers=headers)
+            return SUCCESS_RESPONSE
         if "non_field_errors" in serializer._errors:
-            return Response(data={'success': 'true'}, status=status.HTTP_200_OK)
-        return Response(data={'success': 'false'}, status=status.HTTP_400_BAD_REQUEST)
+            return SUCCESS_RESPONSE
+        return BAS_RESPONSE
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -88,15 +96,13 @@ class FollowViewSet(viewsets.ModelViewSet):
         instance = self.get_queryset().filter(author__pk=kwargs['pk'])
         if instance:
             instance.delete()
-            return Response(data={'success': 'true'}, status=status.HTTP_200_OK)
-        return Response(data={'success': 'false'}, status=status.HTTP_400_BAD_REQUEST)
+            return SUCCESS_RESPONSE
+        return BAS_RESPONSE
 
 
-class IngredientViewSet(viewsets.ViewSet):
-    permission_classes = (AllowAny,)
-
-    def get_queryset(self):
-        return Ingredient.objects.all()
+class IngredientViewSet(viewsets.GenericViewSet):
+    queryset = Ingredient.objects.all()
+    permission_classes = (IsAuthenticated,)
     
     def list(self, request):
         start_ingredient = request.GET.get('query')

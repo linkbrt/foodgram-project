@@ -20,7 +20,7 @@ class RecipeAdmin(admin.ModelAdmin):
     list_display = ('pk', 'title', 'author')
     search_fields = ('title',)
     empty_value_display = '-пусто-'
-    prepopulated_fields = {"slug": ("title",)}
+    prepopulated_fields = {'slug': ('title',)}
     inlines = (IngredientInLine,)
 
 

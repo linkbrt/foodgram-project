@@ -1,4 +1,4 @@
-{% extends '../base.html' %}
+{% extends './base.html' %}
 
 {% block title %}Рецепты{% endblock %}
 {% load static %}
@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block nav %}
-        {% include 'includes/nav.html' with index=True %}
+        {% include 'includes/nav.html' %}
 {% endblock %}
 {% block main %}
     <div class="main__header">
@@ -21,7 +21,7 @@
     </div>
     {% include 'includes/paginator.html' with page=page %}
 {% endblock %}
-{% include 'includes/footer.html' %}
+
 {% block scripts %}
     <script src="{% static './js/components/MainCards.js' %}"></script>
 

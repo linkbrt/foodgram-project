@@ -9,9 +9,11 @@ class Command(BaseCommand):
     help = 'Load data from csv'
 
     def handle(self, *args, **options):
-        print(Path(__file__).resolve().parent.parent.parent)
-        with open(f'{Path(__file__).resolve().parent.parent.parent}/data/ingredients.csv') as csv_file:
+        path_to_csv = f'{Path(__file__).resolve().parent.parent.parent} \
+                       /data/ingredients.csv'
+        with open(path_to_csv) as csv_file:
             file_reader = csv.reader(csv_file)
             for row in file_reader:
                 title, unit = row
                 Ingredient.objects.get_or_create(title=title, unit=unit)
+        print(f'Добавлено {Ingredient.objects.count()} игредиентов')

@@ -1,103 +1,156 @@
+from django.contrib.auth import decorators
 from django.core.paginator import Paginator
 from django.http.request import HttpRequest
+from django.http.response import FileResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.contrib.auth import decorators
 
-from .models import Ingredient, IngredientRecipe, Recipe, Tag, User
 from .forms import RecipeForm
-from .filters import RecipeFilter
-from .recipe_logic.utils import set_ingredients_to_recipe, set_tags_to_recipe
+from .models import Recipe, Tag, User
+from .utils import (get_filter_tags, get_user_favorites, get_user_purchases,
+                    paginate_request, set_ingredients_to_recipe,
+                    set_tags_to_recipe)
 
 
 def index(request: HttpRequest):
-    recipe_list = Recipe.objects.all()
-    paginator = Paginator(recipe_list, 6)
-    page_number = request.GET.get('page')
-    page = paginator.get_page(page_number)
+    filters = get_filter_tags(request.GET.get('tags', ''))
 
-    # Я не знаю как сделать фильтр на странице, именно html как оформить
-    # И сессию я тоже пока не сделал, проверяйте все остальное)))
-    if not request.user.is_authenticated:
-        session = dict(request.session)
-        session.setdefault('purchases_counter', 5)
-        purchases_counter = session.get('purchases_counter', 0)
-    else:    
-        purchases_list = request.user.purchases.select_related('recipe')
-        purchases_counter = [purchase.recipe for purchase in purchases_list]
-    return render(
-        request=request,
-        template_name='foodgram/index.html',
-        context={
+    page, paginator = paginate_request(
+        filters=filters,
+        list_to_paginate=Recipe.objects.all(),
+        page_number=request.GET.get('page', '1'),
+    )
+
+    response_context = {
             'page': page,
             'paginator': paginator,
-            'purchases': purchases_counter,
+            'all_tags': Tag.objects.all(),
         }
+
+    if not request.user.is_authenticated:
+        return render(
+            request=request,
+            template_name='index.html',
+            context=response_context,
+        )
+    
+    response_context['purchases'] = get_user_purchases(request.user)
+    response_context['favorites'] = get_user_favorites(request.user)
+
+    return render(
+        request=request,
+        template_name='index.html',
+        context=response_context,
     )
+
 
 @decorators.login_required
 def shopping_list(request: HttpRequest):
-    result = Recipe.objects.filter(purchase__in=request.user.purchases.all())
+    page, _ = paginate_request(
+        filters={'purchase__in': request.user.purchases.all()},
+        list_to_paginate=Recipe.objects.all()
+    )
     return render(
         request=request,
-        template_name='foodgram/shopping_list.html',
+        template_name='shopping_list.html',
         context={
-            'result': result,
+            'page': page,
         }
     )
 
+
+def download_shopping_list(request: HttpRequest):
+    shop_list = Recipe.objects.filter(purchase__in=request.user.purchases.all())
+    result = {}
+    for purchase in shop_list:
+        for ingredient in purchase.ingredientrecipe_set.all():
+            if result.get(ingredient.ingredient.title):
+                result[ingredient.ingredient.title] += ingredient.quantity
+            else:
+                result[ingredient.ingredient.title] = ingredient.quantity
+    filename = f'shop_list_{request.user.username}.txt'
+    with open(filename, 'w') as shop_file:
+        for key, value in result.items():
+            print(key, value, file=shop_file)
+    return FileResponse(open(filename, 'rb'))
+
+
+
+@decorators.login_required
 def user_follows(request):
-    result = request.user.follow.select_related('author')
-    paginator = Paginator(result, 3)
-    page = paginator.get_page(request.GET.get('page'))
+    page, paginator = paginate_request(
+        list_to_paginate=request.user.follow.select_related('author'),
+    )
     return render(
         request=request,
-        template_name='foodgram/user_follows.html',
+        template_name='user_follows.html',
         context={
             'page': page,
             'paginator': paginator,
         }
     )
 
+
+@decorators.login_required
 def favorites(request):
-    favorites_list = request.user.favorites.select_related('recipe')
-    result = [favorite.recipe for favorite in favorites_list]
-    paginator = Paginator(result, 6)
-    page_number = request.GET.get('page')
-    page = paginator.get_page(page_number)
-    purchases_list = request.user.purchases.select_related('recipe')
-    result = [purchase.recipe for purchase in purchases_list]
+    filters = get_filter_tags(request.GET.get('tags', ''))
+
+    raw_result = request.user.favorites.select_related('recipe')
+    favorites = [purchase.recipe for purchase in raw_result]
+
+    page, paginator = paginate_request(
+        filters=filters,
+        list_to_paginate=favorites,
+    )
+    
     return render(
         request=request,
-        template_name='foodgram/favorite.html',
+        template_name='favorite.html',
         context={
             'page': page,
             'paginator': paginator,
-            'purchases': result,
+            'purchases': get_user_purchases(request.user),
+            'favorites': get_user_favorites(request.user),
+            'all_tags': Tag.objects.all(),
         }
     )
 
-def new_recipe(request: HttpRequest):
-    form = RecipeForm()
-    if request.method == 'POST':
-        form = RecipeForm(data=request.POST, files=request.FILES)
-        if form.is_valid():
-            recipe = form.save(commit=False)
-            recipe.author = request.user
-            recipe.save()
 
-            data = dict(request.POST)
-            set_tags_to_recipe(recipe, data['tags'])
-            set_ingredients_to_recipe(recipe, data.get('ingredients'))
-        print(form.data)
+@decorators.login_required
+def new_recipe(request: HttpRequest):
+    if request.method != 'POST':
+        return render(
+            request=request,
+            template_name='recipe_form.html',
+            context={
+                'form': RecipeForm(),
+                'all_tags': Tag.objects.all(),
+            }
+        )
+
+    form = RecipeForm(data=request.POST, files=request.FILES)
+    data = dict(request.POST)
+    if form.is_valid():
+        recipe = form.save()
+        recipe.author = request.user
+        recipe.save()
+
+        set_tags_to_recipe(recipe, data['tags'])
+        set_ingredients_to_recipe(recipe, data.get('ingredients'))
+        return redirect('single-recipe', username=recipe.author, slug=recipe.slug)
+
     return render(
         request=request,
-        template_name='foodgram/recipe_create.html',
+        template_name='recipe_form.html',
         context={
             'form': form,
+            'data': data,
+            'form_tags': data.get('tags'),
+            'all_tags': Tag.objects.all(),
         }
     )
 
 
+@decorators.login_required
 def recipe_edit(request: HttpRequest, username, slug):
     recipe = get_object_or_404(Recipe, author__username=username, slug=slug)
     if request.user.username != username:
@@ -105,50 +158,60 @@ def recipe_edit(request: HttpRequest, username, slug):
     form = RecipeForm(request.POST or None,
                       files=request.FILES or None,
                       instance=recipe)
-    if form.is_valid():
+    
+    recipe_tags = {tag.name: 'checked' for tag in recipe.tags.all()}
+
+    if request.method == 'POST' and form.is_valid():
         recipe = form.save()
         data = dict(request.POST)
         set_tags_to_recipe(recipe, data.get('tags'), update=True)
         set_ingredients_to_recipe(recipe, data.get('ingredients'), update=True)
         return redirect('single-recipe', username=username, slug=recipe.slug)
-    # print(form.errors)
-    # print(form.fields)
-    tags_to_render = {}
-    for tag in recipe.tags.all():
-        tags_to_render[tag.name] = 'checked'
-    return render(request, 'foodgram/recipe_change.html', {
-        'form': form,
-        'recipe': recipe,
-        'tags': tags_to_render,
-    })
 
+    return render(
+            request=request,
+            template_name='recipe_form.html',
+            context={
+                'form': form,
+                'recipe': recipe,
+                'recipe_tags': recipe_tags,
+                'all_tags': Tag.objects.all(),
+            }
+    )
+
+@decorators.login_required
 def get_requested_user_page(request, username):
     user = get_object_or_404(User, username=username)
-    user_recipes_list = Recipe.objects.filter(author=user)
-    paginator = Paginator(user_recipes_list, 6)
-    page_number = request.GET.get('page')
-    page = paginator.get_page(page_number)
+
+    filters = get_filter_tags(request.GET.get('tags', ''))
+    page, paginator = paginate_request(
+        filters=filters,
+        list_to_paginate=Recipe.objects.filter(author=user),
+    )
+
     return render(
         request=request,
-        template_name='foodgram/authorRecipe.html',
+        template_name='user_page.html',
         context={
             'page': page,
             'paginator': paginator,
             'user': user,
+            'user_follow': request.user.follow.filter(author=user).exists(),
+            'purchases': get_user_purchases(request.user),
+            'favorites': get_user_favorites(request.user),
+            'all_tags': Tag.objects.all(),
         }
     )
 
+@decorators.login_required
 def get_single_recipe_page(request, username, slug):
     recipe = get_object_or_404(Recipe, slug=slug)
-    user_follows = [follow.author for follow in request.user.follow.all()]
     return render(
         request=request,
-        template_name='foodgram/singlePage.html',
+        template_name='card_page.html',
         context={
             'recipe': recipe,
-            'user_follows': user_follows,
+            'user_follow': request.user.follow.filter(author=recipe.author).exists(),
+            'user_purchase': request.user.purchases.filter(recipe=recipe).exists(),
         }
     )
-
-def user_directory_path(instance, filename):
-    return f'recipies/{instance.author.username}/{filename}'

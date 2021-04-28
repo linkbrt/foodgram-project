@@ -1,11 +1,11 @@
-{% extends '../base.html' %}
+{% extends './base.html' %}
 
 {% block title %}Избранное{% endblock %}
 {% load static %}
 {% block stylesheet %}{% static './pages/index.css' %}{% endblock %}
 
 {% block nav %}
-    {% include 'includes/nav.html' with favorite=True %}
+    {% include 'includes/nav.html' %}
 {% endblock %}
 
 {% block main %}
@@ -21,7 +21,6 @@
     {% include 'includes/paginator.html' with page=page %}
 {% endblock %}
 
-{% include 'includes/footer.html' %}
 {% block scripts %}
 <script src="{% static './js/components/MainCards.js' %}"></script>
 

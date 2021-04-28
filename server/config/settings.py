@@ -32,7 +32,6 @@ INSTALLED_APPS = [
     'users',
     'foodgram',
     'rest_framework',
-    # 'rest_framework.authtoken',
     'api',
     'debug_toolbar',
     'django_filters',
@@ -64,6 +63,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'foodgram.context_processors.tags_to_render',
+                'foodgram.context_processors.purchases_counter',
             ],
         },
     },
@@ -145,7 +146,6 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
-        # 'rest_framework.authentication.TokenAuthentication',
     ),
 }
 
@@ -154,3 +154,5 @@ DEFAULT_FROM_EMAIL = 'confirm@' + DOMAIN_NAME
 
 EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
 EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
+
+PAGINATION_PAGE_SIZE = 12

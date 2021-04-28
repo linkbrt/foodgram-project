@@ -11,9 +11,7 @@ router_v1.register('subscribe', FollowViewSet, basename='subscribes')
 router_v1.register('ingredients', IngredientViewSet, basename='ingredients')
 
 auth_urlpatterns = [
-    # path('email/', register_user),
     path('api-token-auth/', views.obtain_auth_token)
-    # path('token/', retrieve_token),
 ]
 
 urlpatterns = [

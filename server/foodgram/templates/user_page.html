@@ -1,4 +1,5 @@
-{% extends '../base.html' %}
+{% extends './base.html' %}
+
 {% block title %}Рецепты{% endblock %}
 {% load static %}
 {% block stylesheet %}{% static './pages/index.css' %}{% endblock %}
@@ -13,9 +14,11 @@
             {% include 'includes/filters.html' %}
         </div>
 
+        {% if user_follow %}
         <div class="author-subscribe" data-author="{{ user.pk }}">
-            <p style="padding: 0 0 2em 0;"><button class="button button_style_light-blue button_size_subscribe" name="subscribe" data-out>Подписаться на автора</button></p>
+            <p style="padding: 0 0 2em 0;">{% include 'includes/buttons/subscribe_button.html' %}</p>
         </div>
+        {% endif %}
         <div class="card-list" >
             {% for recipe in page %}
                 {% include "includes/card.html" with recipe=recipe %}
@@ -24,7 +27,6 @@
         {% include 'includes/paginator.html' with page=page %}
 {% endblock %}
 
-{% include 'includes/footer.html' %}
 {% block scripts %}
 <script src="{% static './js/components/MainCards.js' %}"></script>
 
