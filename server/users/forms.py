@@ -5,4 +5,4 @@ from .models import Profile
 class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm):
         model = Profile
-        fields = '__all__'
+        fields = ("username",)

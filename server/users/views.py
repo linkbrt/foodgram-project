@@ -1,12 +1,13 @@
-from django.shortcuts import get_object_or_404, render, redirect
-from django.http import request, response
-from django.core.mail import send_mail
-from django.contrib.auth.tokens import default_token_generator
-from django.contrib import messages
-from django.contrib.auth import logout, models, authenticate, login, forms, update_session_auth_hash, decorators
 from django.conf import settings
-from .models import Profile
+from django.contrib.auth import (authenticate, decorators, forms, login,
+                                 logout, update_session_auth_hash)
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
+from django.http import request, response
+from django.shortcuts import get_object_or_404, redirect, render
+
 from .forms import CustomUserCreationForm
+from .models import Profile
 
 
 def login_view(request: request.HttpRequest):
@@ -64,6 +65,11 @@ def registration_user(request: request.HttpRequest):
     form = CustomUserCreationForm(request.POST)
     if form.is_valid():
         form.save()
+        new_user = authenticate(
+            username=form.cleaned_data['username'],
+            password=form.cleaned_data['password1'],
+        )
+        login(request, new_user)
         return redirect('index')
     return render(request, 'user-registration.html', {'form': form})
 

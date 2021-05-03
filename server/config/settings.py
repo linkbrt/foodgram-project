@@ -5,6 +5,8 @@ from django.core.management.utils import get_random_secret_key
 from dotenv import load_dotenv
 
 
+AUTH_USER_MODEL = 'users.Profile'
+
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -48,7 +50,6 @@ MIDDLEWARE = [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
-AUTH_USER_MODEL = 'users.Profile'
 ROOT_URLCONF = 'config.urls'
 
 TEMPLATES_DIR = BASE_DIR.parent / 'templates'
