@@ -4,6 +4,7 @@ RUN apt-get update && apt-get install && \
 
 WORKDIR /code
 COPY . .
+RUN mkdir static media
 
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
