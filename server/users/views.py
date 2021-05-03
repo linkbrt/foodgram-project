@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.contrib.auth import logout, models, authenticate, login, forms, update_session_auth_hash, decorators
 from django.conf import settings
 from .models import Profile
+from .forms import CustomUserCreationForm
 
 
 def login_view(request: request.HttpRequest):
@@ -57,10 +58,10 @@ def change_password(request: request.HttpRequest):
 
 def registration_user(request: request.HttpRequest):
     if request.method != 'POST':
-        form = forms.UserCreationForm()
+        form = CustomUserCreationForm()
         return render(request, 'user-registration.html', {'form': form})
     
-    form = forms.UserCreationForm(request.POST)
+    form = CustomUserCreationForm(request.POST)
     if form.is_valid():
         form.save()
         return redirect('index')
