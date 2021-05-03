@@ -14,7 +14,7 @@ if not SECRET_KEY:
     SECRET_KEY = get_random_secret_key()
     os.environ['SECRET_KEY'] = SECRET_KEY
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -133,10 +133,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'static/'
+STATIC_ROOT = BASE_DIR.parent / 'static/'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media/'
+MEDIA_ROOT = BASE_DIR.parent / 'media/'
 
 LOGIN_URL = "/auth/login/"
 LOGIN_REDIRECT_URL = "index" 
