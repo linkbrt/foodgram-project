@@ -9,10 +9,6 @@
 
 {% block stylesheet %}{% static './pages/form.css' %}{% endblock %}
 
-{% block nav %}
-    {% include 'includes/nav.html' %}
-{% endblock %}
-
 {% block main %}
 <div class="main__header">
     <h1 class="main__title">{% if recipe %}Изменение{% else %}Создание{% endif %} рецепта</h1>

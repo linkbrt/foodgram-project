@@ -2,8 +2,13 @@ from rest_framework import serializers, validators, fields
 
 from .models import Favorite, Follow, Purchase
 
+
 class PurchaseSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(read_only=True, default=fields.CurrentUserDefault())
+    user = serializers.PrimaryKeyRelatedField(
+        read_only=True,
+        default=fields.CurrentUserDefault()
+    )
+
     class Meta:
         model = Purchase
         fields = '__all__'
@@ -16,8 +21,11 @@ class PurchaseSerializer(serializers.ModelSerializer):
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(read_only=True, default=fields.CurrentUserDefault())
-    
+    user = serializers.PrimaryKeyRelatedField(
+        read_only=True,
+        default=fields.CurrentUserDefault()
+    )
+
     class Meta:
         model = Favorite
         fields = '__all__'
@@ -30,7 +38,10 @@ class FavoriteSerializer(serializers.ModelSerializer):
 
 
 class FollowSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(read_only=True, default=fields.CurrentUserDefault())
+    user = serializers.PrimaryKeyRelatedField(
+        read_only=True,
+        default=fields.CurrentUserDefault()
+    )
 
     class Meta:
         model = Follow

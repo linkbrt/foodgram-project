@@ -1,6 +1,8 @@
-from typing import Any
+from typing import Any, Optional
+
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.core.paginator import Paginator
+from django.db.models.query import QuerySet
 from django.shortcuts import get_object_or_404
 
 from .models import Ingredient, IngredientRecipe, Recipe, Tag
@@ -14,23 +16,13 @@ def get_filter_tags(filter_tags: Any):
     return {'tags__in': [get_object_or_404(Tag, name=tag) for tag in filter_tags]}
 
 
-def paginate_request(filters: dict={}, list_to_paginate=[], page_number: str='1'):
+def paginate_request(filters: Optional[dict], list_to_paginate: QuerySet, page_number: str='1'):
     if filters:
         list_to_paginate = list_to_paginate.filter(**filters)
 
     paginator = Paginator(list_to_paginate, 6)
     page = paginator.get_page(page_number)
     return page, paginator
-
-
-def get_user_purchases(user: AbstractBaseUser):
-    purchases_list = user.purchases.values('recipe')
-    return [item['recipe'] for item in purchases_list]
-
-
-def get_user_favorites(user: AbstractBaseUser):
-    favorites_list = user.favorites.values('recipe')
-    return [item['recipe'] for item in favorites_list]
 
 
 def set_tags_to_recipe(instance: Recipe, tags, update: bool=False):
@@ -48,7 +40,7 @@ def set_ingredients_to_recipe(instance: Recipe, ingredients, update: bool=False)
         return
     for item in ingredients:
         title, value = item.split('-')
-        ingredient = Ingredient.objects.get(title=title)
+        ingredient = Ingredient.objects.filter(title=title).first()
         if not ingredient:
             continue
         create_query.append(

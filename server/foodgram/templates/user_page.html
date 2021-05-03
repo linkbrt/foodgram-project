@@ -4,17 +4,13 @@
 {% load static %}
 {% block stylesheet %}{% static './pages/index.css' %}{% endblock %}
 
-{% block nav %}
-    {% include 'includes/nav.html' %}
-{% endblock %}
-
 {% block main %}
         <div class="main__header">
             <h1 class="main__title">{{ user.username }}</h1>
             {% include 'includes/filters.html' %}
         </div>
 
-        {% if user_follow %}
+        {% if user in request.user.follow.all %}
         <div class="author-subscribe" data-author="{{ user.pk }}">
             <p style="padding: 0 0 2em 0;">{% include 'includes/buttons/subscribe_button.html' %}</p>
         </div>

@@ -24,6 +24,13 @@ class Purchase(models.Model):
     def __str__(self) -> str:
         return f'{self.user.username} - {self.recipe.title}'
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['recipe', 'user'],
+                name='unique purchase')
+        ]
+
 
 class Favorite(models.Model):
     recipe = models.ForeignKey(
@@ -42,6 +49,13 @@ class Favorite(models.Model):
     def __str__(self) -> str:
         return f'{self.user.username} - {self.recipe.title}'
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['recipe', 'user'],
+                name='unique favorite')
+        ]
+
 
 class Follow(models.Model):
     user = models.ForeignKey(
@@ -56,3 +70,10 @@ class Follow(models.Model):
         related_name='follower',
         verbose_name='Автор'
     )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'author'],
+                name='unique follow')
+        ]

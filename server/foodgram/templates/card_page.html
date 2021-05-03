@@ -4,10 +4,6 @@
 {% load static %}
 {% block stylesheet %}{% static './pages/single.css' %}{% endblock%}
 
-{% block nav%}
-    {% include 'includes/nav.html' %}
-{% endblock %}
-
 {% block main %}
 <div class="single-card" data-id="{{ recipe.pk }}" data-author="{{ recipe.author.pk }}">
     <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" class="single-card__image">
@@ -49,15 +45,7 @@
                 <button class="button button_style_blue" name="purchases" data-out><span class="icon-plus button__icon"></span>Добавить в покупки</button>
             {% endif %}
             </li>
-            {% if request.user != recipe.author %}
-                <li class="single-card__item">
-                {% if user_follow %}
-                    {% include 'includes/buttons/unsubscribe_button.html' %}
-                {% else %}
-                    {% include 'includes/buttons/subscribe_button.html' %}
-                {% endif %}
-                </li>
-            {% endif %}
+            {% include 'includes/buttons/subscribe_button.html' %}
         </ul>
         <div class="single-card__section">
             <h3 class="single-card__section-title">Ингредиенты:</h3>

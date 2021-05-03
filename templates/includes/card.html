@@ -1,17 +1,13 @@
 {% load static %}
+{% load tags %}
+
 <div class="card" data-id="{{ recipe.pk }}">
     <a href="{% url 'single-recipe' recipe.author recipe.slug %}" class="link" target="_blank"><img src="{{ recipe.image.url }}" alt="{{ recipe.author.name }}" class="card__image"></a>
     <div class="card__body">
         <a class="card__title link" href="{% url 'single-recipe' recipe.author recipe.slug %}" target="_blank">{{ recipe.title }}</a>
         <ul class="card__items">
             {% for tag in recipe.tags.all %}
-                {% if tag.name == 'Завтрак' %}
-                    <li class="card__item"><span class="badge badge_style_orange">Завтрак</span></li>
-                {% elif tag.name == 'Обед' %}
-                    <li class="card__item"><span class="badge badge_style_green">Обед</span></li>
-                {% else %}
-                    <li class="card__item"><span class="badge badge_style_purple">Ужин</span></li>
-                {% endif %}
+                <li class="card__item"><span class="badge badge_style_{{ tag.style }}">{{ tag.name }}</span></li>
             {% endfor %}
         </ul>
         <div class="card__items card__items_column">
@@ -20,7 +16,7 @@
         </div>
     </div>
     <div class="card__footer">
-        {% if recipe.pk in purchases %}
+        {% if recipe|in_purchases:user %}
             <button class="button button_style_light-blue-outline" name="purchases">
                 <span class="icon-check button__icon"></span>Рецепт добавлен
             </button>
@@ -29,7 +25,7 @@
                 <span class="icon-plus button__icon"></span>Добавить в покупки
             </button>
         {% endif %}
-        {% if recipe.pk in favorites %}
+        {% if recipe|in_favorites:user %}
             <button class="button button_style_none" name="favorites">
                 <span class="icon-favorite icon-favorite_active"></span>
             </button>

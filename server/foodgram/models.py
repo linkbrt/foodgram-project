@@ -9,31 +9,65 @@ User = get_user_model()
 
 
 class Ingredient(models.Model):
-    title = models.SlugField(max_length=30)
-    unit = models.CharField(max_length=10)
+    title = models.SlugField(max_length=30, verbose_name='Название')
+    unit = models.CharField(max_length=10, verbose_name='Единица измерения')
 
     def __str__(self) -> str:
         return f'{self.title} - {self.unit}'
 
 
 class Tag(models.Model):
-    name = models.CharField(max_length=15)
-    style = models.CharField(max_length=100)
+    name = models.CharField(max_length=15, verbose_name='Название')
+    style = models.CharField(max_length=100, verbose_name='CSS стиль')
 
     def __str__(self) -> str:
         return self.name
 
 
 class Recipe(models.Model):
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='recipes')
-    title = models.CharField(max_length=50, unique=True)
-    image = models.ImageField(upload_to=user_directory_path)
-    description = models.CharField(max_length=300)
-    ingredients = models.ManyToManyField(Ingredient, through='IngredientRecipe')
-    tags = models.ManyToManyField(Tag)
-    cooking_time = models.IntegerField(validators=[validators.MinValueValidator(0), validators.MaxValueValidator(1000)])
-    slug = models.SlugField(unique=True, auto_created=True)
-    pub_date = models.DateTimeField(auto_now_add=True)
+    author = models.ForeignKey(
+        to=User,
+        on_delete=models.CASCADE,
+        related_name='recipes',
+        verbose_name='Автор'
+    )
+    title = models.CharField(
+        max_length=50,
+        unique=True,
+        verbose_name='Название'
+    )
+    image = models.ImageField(
+        upload_to=user_directory_path,
+        verbose_name='Изображение'
+    )
+    description = models.CharField(
+        max_length=300,
+        verbose_name='Описание'
+    )
+    ingredients = models.ManyToManyField(
+        to=Ingredient,
+        through='IngredientRecipe',
+        verbose_name='Ингредиенты'
+    )
+    tags = models.ManyToManyField(
+        to=Tag,
+        verbose_name='Тэги'
+    )
+    cooking_time = models.IntegerField(
+        validators=[
+            validators.MinValueValidator(0),
+            validators.MaxValueValidator(1000)],
+        verbose_name='Время приготовления'
+    )
+    slug = models.SlugField(
+        unique=True,
+        auto_created=True,
+        verbose_name='Слаг'
+    )
+    pub_date = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Время добавления'
+    )
 
     def save(self, *args, **kwargs) -> None:
         self.slug = pretty_slugify(title=self.title)
@@ -44,6 +78,20 @@ class Recipe(models.Model):
 
 
 class IngredientRecipe(models.Model):
-    ingredient = models.ForeignKey(to=Ingredient, on_delete=models.SET_NULL, null=True)
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
-    quantity = models.IntegerField(validators=[validators.MinValueValidator(0), validators.MaxValueValidator(10000)])
+    ingredient = models.ForeignKey(
+        to=Ingredient,
+        on_delete=models.SET_NULL,
+        null=True,
+        verbose_name='Игредиент'
+    )
+    recipe = models.ForeignKey(
+        to=Recipe,
+        on_delete=models.CASCADE,
+        verbose_name='Рецепт'
+    )
+    quantity = models.IntegerField(
+        validators=[
+            validators.MinValueValidator(1),
+            validators.MaxValueValidator(10000)], 
+            verbose_name='Количество ингредиента'
+        )

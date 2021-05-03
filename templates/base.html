@@ -12,7 +12,8 @@
     <link rel="stylesheet" href="{% block stylesheet %}{% endblock %}">
 </head>
 <body class="body">
-    {% block nav %}{% endblock %}
+    {% include 'includes/nav.html' %}
+
     <main class="main container">
     {% block main %}
 
