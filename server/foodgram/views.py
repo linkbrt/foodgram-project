@@ -26,14 +26,6 @@ def index(request: HttpRequest):
             'all_tags': Tag.objects.all(),
         }
 
-    if not request.user.is_authenticated:
-        return render(
-            request=request,
-            template_name='index.html',
-            context=response_context,
-        )
-
-
     return render(
         request=request,
         template_name='index.html',
@@ -65,7 +57,6 @@ def download_shopping_list(request: HttpRequest):
     filename = f'shop_list_{request.user.username}.txt'
     with open(filename, 'wb') as shop_file:
         for item in result:
-            print(result)
             result = item['ingredient__title'] + str(item['quantity'])
             shop_file.write(bytes(result + '\n', 'utf8'))
     return FileResponse(open(filename, 'rb'))
@@ -127,10 +118,11 @@ def new_recipe(request: HttpRequest):
     if form.is_valid():
         recipe = form.save()
         recipe.author = request.user
-        recipe.save()
 
         utils.set_tags_to_recipe(recipe, data['tags'])
         utils.set_ingredients_to_recipe(recipe, data.get('ingredients'))
+
+        recipe.save()
         return redirect('single-recipe', username=recipe.author, slug=recipe.slug)
 
     return render(
@@ -157,10 +149,11 @@ def recipe_edit(request: HttpRequest, username, slug):
     recipe_tags = {tag.name: 'checked' for tag in recipe.tags.all()}
 
     if form.is_valid():
-        recipe = form.save()
         data = dict(request.POST)
         utils.set_tags_to_recipe(recipe, data.get('tags'), update=True)
         utils.set_ingredients_to_recipe(recipe, data.get('ingredients'), update=True)
+
+        recipe = form.save()
         return redirect('single-recipe', username=username, slug=recipe.slug)
 
     return render(

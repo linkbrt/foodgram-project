@@ -10,7 +10,7 @@
     </div>
     <div class="card-list">
         {% for follow in page %}
-            {% include 'includes/card-big.html' with author=follow.author %}
+            {% include 'includes/follow-card.html' with author=follow.author %}
         {% endfor %}
     </div>
     {% include 'includes/paginator.html' with page=page %}

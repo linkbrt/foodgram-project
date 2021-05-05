@@ -17,7 +17,7 @@ def get_filter_tags(filter_tags: Any):
 
 
 def paginate_request(filters: Optional[dict], list_to_paginate: QuerySet, page_number: str='1'):
-    if filters:
+    if filters is not None:
         list_to_paginate = list_to_paginate.filter(**filters)
 
     paginator = Paginator(list_to_paginate, 6)
@@ -40,9 +40,7 @@ def set_ingredients_to_recipe(instance: Recipe, ingredients, update: bool=False)
         return
     for item in ingredients:
         title, value = item.split('-')
-        ingredient = Ingredient.objects.filter(title=title).first()
-        if not ingredient:
-            continue
+        ingredient = get_object_or_404(Ingredient, title=title)
         create_query.append(
             IngredientRecipe(
                 recipe=instance,

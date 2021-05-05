@@ -55,7 +55,7 @@ class Recipe(models.Model):
     )
     cooking_time = models.IntegerField(
         validators=[
-            validators.MinValueValidator(0),
+            validators.MinValueValidator(1),
             validators.MaxValueValidator(1000)],
         verbose_name='Время приготовления'
     )

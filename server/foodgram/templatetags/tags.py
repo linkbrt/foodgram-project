@@ -2,6 +2,7 @@ from api.models import Purchase, Favorite
 from django import template
 from django.utils.http import urlencode
 
+
 register = template.Library()
 
 
@@ -12,11 +13,15 @@ def get_item(dictionary, key):
 
 @register.filter
 def word_declination(word, count):
+    count -= 3
+    if count > 20:
+        count %= 10
+
     if count == 1:
-        return 'рецепт'
+        return f'{count} рецепт'
     elif count  < 5:
-        return 'рецепта'
-    return 'рецептов'
+        return f'{count} рецепта'
+    return f'{count} рецептов'
 
 
 @register.filter
@@ -27,6 +32,10 @@ def in_purchases(recipe, user) -> bool:
 @register.filter
 def in_favorites(recipe, user) -> bool:
     return Favorite.objects.filter(user=user, recipe=recipe).exists()
+
+@register.filter
+def in_follows(user, author) -> bool:
+    return author in user.follow.all()
 
 
 @register.simple_tag(takes_context=True)
