@@ -7,9 +7,10 @@ class IngredientAdmin(admin.ModelAdmin):
     search_fields = ('title',)
     empty_value_display = '-пусто-'
 
-@admin.register(Tag)
+
 class TagAdmin(admin.ModelAdmin):
     pass
+
 
 class IngredientInLine(admin.TabularInline):
     model = Recipe.ingredients.through
@@ -26,3 +27,4 @@ class RecipeAdmin(admin.ModelAdmin):
 
 admin.site.register(Ingredient, IngredientAdmin)
 admin.site.register(Recipe, RecipeAdmin)
+admin.site.register(Tag, TagAdmin)

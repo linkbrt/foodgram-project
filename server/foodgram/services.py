@@ -12,5 +12,5 @@ def user_directory_path(instance, filename):
 
 
 def pretty_slugify(title: str):
-    slug = title.translate(str.maketrans(RUS_TRANS,ENG_TRANS))
+    slug = title.translate(str.maketrans(RUS_TRANS, ENG_TRANS))
     return slugify(slug)

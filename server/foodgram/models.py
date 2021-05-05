@@ -92,6 +92,7 @@ class IngredientRecipe(models.Model):
     quantity = models.IntegerField(
         validators=[
             validators.MinValueValidator(1),
-            validators.MaxValueValidator(10000)], 
-            verbose_name='Количество ингредиента'
-        )
+            validators.MaxValueValidator(10000)
+            ],
+        verbose_name='Количество ингредиента'
+    )

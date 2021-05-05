@@ -19,7 +19,7 @@ def word_declination(word, count):
 
     if count == 1:
         return f'{count} рецепт'
-    elif count  < 5:
+    elif count < 5:
         return f'{count} рецепта'
     return f'{count} рецептов'
 
@@ -32,6 +32,7 @@ def in_purchases(recipe, user) -> bool:
 @register.filter
 def in_favorites(recipe, user) -> bool:
     return Favorite.objects.filter(user=user, recipe=recipe).exists()
+
 
 @register.filter
 def in_follows(user, author) -> bool:

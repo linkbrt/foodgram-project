@@ -11,6 +11,7 @@ def tags_to_render(request: HttpRequest):
         }
     return {'tags': render_tags}
 
+
 def purchases_counter(request: HttpRequest):
     user = request.user
     if user.is_authenticated:

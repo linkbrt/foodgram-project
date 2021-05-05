@@ -1,5 +1,4 @@
 from django.contrib.auth import decorators
-from django.core.paginator import Paginator
 from django.db.models.aggregates import Sum
 from django.http.request import HttpRequest
 from django.http.response import FileResponse
@@ -51,8 +50,9 @@ def shopping_list(request: HttpRequest):
 def download_shopping_list(request: HttpRequest):
     result = IngredientRecipe.objects.values(
             'ingredient__title'
-        ).annotate(quantity=Sum('quantity')
-    )
+        ).annotate(
+            quantity=Sum('quantity')
+            )
 
     filename = f'shop_list_{request.user.username}.txt'
     with open(filename, 'wb') as shop_file:
@@ -89,7 +89,7 @@ def favorites(request):
         filters=filters,
         list_to_paginate=favorites,
     )
-    
+
     return render(
         request=request,
         template_name='favorite.html',
@@ -123,7 +123,11 @@ def new_recipe(request: HttpRequest):
         utils.set_ingredients_to_recipe(recipe, data.get('ingredients'))
 
         recipe.save()
-        return redirect('single-recipe', username=recipe.author, slug=recipe.slug)
+        return redirect(
+            'single-recipe',
+            username=recipe.author,
+            slug=recipe.slug
+        )
 
     return render(
         request=request,
@@ -145,13 +149,15 @@ def recipe_edit(request: HttpRequest, username, slug):
     form = RecipeForm(request.POST or None,
                       files=request.FILES or None,
                       instance=recipe)
-    
+
     recipe_tags = {tag.name: 'checked' for tag in recipe.tags.all()}
 
     if form.is_valid():
         data = dict(request.POST)
         utils.set_tags_to_recipe(recipe, data.get('tags'), update=True)
-        utils.set_ingredients_to_recipe(recipe, data.get('ingredients'), update=True)
+        utils.set_ingredients_to_recipe(
+            recipe, data.get('ingredients'), update=True
+        )
 
         recipe = form.save()
         return redirect('single-recipe', username=username, slug=recipe.slug)
@@ -166,6 +172,7 @@ def recipe_edit(request: HttpRequest, username, slug):
                 'all_tags': Tag.objects.all(),
             }
     )
+
 
 @decorators.login_required
 def get_requested_user_page(request, username):
@@ -188,6 +195,7 @@ def get_requested_user_page(request, username):
         }
     )
 
+
 @decorators.login_required
 def get_single_recipe_page(request, username, slug):
     recipe = get_object_or_404(Recipe, slug=slug)
@@ -196,6 +204,8 @@ def get_single_recipe_page(request, username, slug):
         template_name='card_page.html',
         context={
             'recipe': recipe,
-            'user_purchase': request.user.purchases.filter(recipe=recipe).exists(),
+            'user_purchase': request.user.purchases.filter(
+                recipe=recipe
+            ).exists(),
         }
     )

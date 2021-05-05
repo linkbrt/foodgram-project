@@ -61,7 +61,7 @@ def registration_user(request: request.HttpRequest):
     if request.method != 'POST':
         form = CustomUserCreationForm()
         return render(request, 'user-registration.html', {'form': form})
-    
+
     form = CustomUserCreationForm(request.POST)
     if form.is_valid():
         form.save()
