@@ -47,6 +47,7 @@ def shopping_list(request: HttpRequest):
     )
 
 
+@decorators.login_required
 def download_shopping_list(request: HttpRequest):
     result = IngredientRecipe.objects.values(
             'ingredient__title'
