@@ -4,7 +4,7 @@ from django.http.request import HttpRequest
 from django.http.response import FileResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
-import foodgram.utils as utils
+from .utils import utils
 
 from .forms import RecipeForm
 from .models import IngredientRecipe, Recipe, Tag, User
@@ -82,9 +82,7 @@ def user_follows(request):
 def favorites(request):
     filters = utils.get_filter_tags(request.GET.get('tags', ''))
 
-    raw_result = request.user.favorites.select_related('recipe')
-    favorites = [purchase.recipe for purchase in raw_result]
-
+    favorites = Recipe.objects.filter(favorite__user=request.user)
     page, paginator = utils.paginate_request(
         filters=filters,
         list_to_paginate=favorites,

@@ -4,7 +4,7 @@ from django.core.paginator import Paginator
 from django.db.models.query import QuerySet
 from django.shortcuts import get_object_or_404
 
-from .models import Ingredient, IngredientRecipe, Recipe, Tag
+from ..models import Ingredient, IngredientRecipe, Recipe, Tag
 
 
 def get_filter_tags(filter_tags: Any):

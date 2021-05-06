@@ -11,10 +11,14 @@ from .models import Profile
 
 
 def login_view(request: request.HttpRequest):
+    form = forms.AuthenticationForm()
     if request.method != 'POST':
         return render(
                 request=request,
                 template_name='user-login.html',
+                context={
+                    'form': form,
+                }
             )
 
     user = authenticate(
@@ -26,8 +30,9 @@ def login_view(request: request.HttpRequest):
             request=request,
             template_name='user-login.html',
             context={
-                'error': 'Имя пользователя и пароль не совпадают. \
-                            Введите правильные данные.'
+                'login_error': 'Имя пользователя и пароль не совпадают. \
+                                Введите правильные данные.',
+                'form': form,
             }
         )
     if user.is_active:

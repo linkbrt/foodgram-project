@@ -17,11 +17,12 @@ def word_declination(word, count):
     if count > 20:
         count %= 10
 
+    result = f'{count} {word}'
     if count == 1:
-        return f'{count} рецепт'
+        return result
     elif count < 5:
-        return f'{count} рецепта'
-    return f'{count} рецептов'
+        return result + 'а'
+    return result + 'ов'
 
 
 @register.filter

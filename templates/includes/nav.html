@@ -7,12 +7,6 @@
                     Рецепты
                 </a>
             </li>
-            <li class="nav__item {% if request.resolver_match.url_name == 'shopping-list' %}nav__item_active{% endif %}">
-                <a href="{% url 'shopping-list' %}" class="nav__link link">
-                    Список покупок 
-                    <span class="badge badge_style_blue nav__badge" id="counter">{{ counter | default:'' }}</span>
-                </a>
-            </li>
         {% if user.is_authenticated %}
             <li class="nav__item {% if request.resolver_match.url_name == 'user-follows' %}nav__item_active{% endif %}">
                 <a href="{% url 'user-follows' %}" class="nav__link link">
@@ -29,7 +23,15 @@
                     Избранное
                 </a>
             </li>
+        {% endif %}
+            <li class="nav__item {% if request.resolver_match.url_name == 'shopping-list' %}nav__item_active{% endif %}">
+                <a href="{% url 'shopping-list' %}" class="nav__link link">
+                    Список покупок 
+                    <span class="badge badge_style_blue nav__badge" id="counter">{{ counter | default:'' }}</span>
+                </a>
+            </li>
         </ul>
+        {% if user.is_authenticated %}
         <ul class="nav__items list">
             <li class="nav__item {% if request.resolver_match.url_name == 'password-change' %}nav__item_active{% endif %}">
                 <a href="{% url 'password-change' %}" class="nav__link link">
@@ -43,7 +45,6 @@
             </li>
         </ul>
         {% else %}
-        </ul>
         <ul class="nav__items list">
             <li class="nav__item {% if request.resolver_match.url_name == 'login' %}nav__item_active{% endif %}">
                 <a href="{% url 'login' %}" class="nav__link link">
