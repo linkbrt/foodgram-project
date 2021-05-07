@@ -13,7 +13,6 @@ def get_item(dictionary, key):
 
 @register.simple_tag
 def word_declination(**kwargs):
-    print
     count = int(kwargs.get('count', 4))
     count -= 3
     if count > 20:
