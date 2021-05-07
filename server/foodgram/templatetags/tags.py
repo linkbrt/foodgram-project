@@ -11,13 +11,15 @@ def get_item(dictionary, key):
     return dictionary.get(key)
 
 
-@register.filter
-def word_declination(word, count):
+@register.simple_tag
+def word_declination(**kwargs):
+    print
+    count = int(kwargs.get('count', 4))
     count -= 3
     if count > 20:
         count %= 10
 
-    result = f'{count} {word}'
+    result = f'{count} рецепт'
     if count == 1:
         return result
     elif count < 5:

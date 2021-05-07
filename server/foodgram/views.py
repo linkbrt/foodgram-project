@@ -115,12 +115,11 @@ def new_recipe(request: HttpRequest):
     form = RecipeForm(data=request.POST, files=request.FILES)
     data = dict(request.POST)
     if form.is_valid():
-        recipe = form.save()
+        recipe = form.save(commit=False)
         recipe.author = request.user
-
-        utils.set_tags_to_recipe(recipe, data['tags'])
+        recipe.save()
+        utils.set_tags_to_recipe(recipe, data.get('tags'))
         utils.set_ingredients_to_recipe(recipe, data.get('ingredients'))
-
         recipe.save()
         return redirect(
             'single-recipe',
