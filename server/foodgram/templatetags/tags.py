@@ -13,18 +13,18 @@ def get_item(dictionary, key):
 
 @register.simple_tag
 def word_declination(**kwargs):
-    print
-    count = int(kwargs.get('count', 4))
+    count = int(kwargs['count'])
     count -= 3
     if count > 20:
         count %= 10
 
-    result = f'{count} рецепт'
     if count == 1:
-        return result
+        result = 'рецепт'
     elif count < 5:
-        return result + 'а'
-    return result + 'ов'
+        result = 'рецепта'
+    else:
+        result = 'рецептов'
+    return f'{count} {result}'
 
 
 @register.filter

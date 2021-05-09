@@ -140,8 +140,8 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR.parent / 'media/'
 
 LOGIN_URL = "/auth/login/"
-LOGIN_REDIRECT_URL = "index" 
-LOGOUT_REDIRECT_URL = "index" 
+LOGIN_REDIRECT_URL = "index"
+LOGOUT_REDIRECT_URL = "index"
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
