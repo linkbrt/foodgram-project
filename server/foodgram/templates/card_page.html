@@ -34,7 +34,7 @@
         </div>
         <ul class="single-card__items">
             {% include 'includes/buttons/recipe_purchase_button.html' %}
-            {% include 'includes/buttons/subscribe_button.html' %}
+            {% include 'includes/buttons/subscribe_button.html' with author=recipe.author %}
         </ul>
         <div class="single-card__section">
             <h3 class="single-card__section-title">Ингредиенты:</h3>

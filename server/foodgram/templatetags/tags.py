@@ -1,4 +1,4 @@
-from api.models import Purchase, Favorite
+from api.models import Purchase, Favorite, Follow
 from django import template
 from django.utils.http import urlencode
 
@@ -39,7 +39,7 @@ def in_favorites(recipe, user) -> bool:
 
 @register.filter
 def in_follows(user, author) -> bool:
-    return author in user.follow.all()
+    return Follow.objects.filter(user=user, author=author).exists()
 
 
 @register.simple_tag(takes_context=True)

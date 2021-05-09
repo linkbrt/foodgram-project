@@ -17,7 +17,7 @@ def get_filter_tags(filter_tags: Any):
 
 def paginate_request(filters: Optional[dict], list_to_paginate: QuerySet, page_number: str = '1'):
     if filters is not None:
-        list_to_paginate = list_to_paginate.filter(**filters)
+        list_to_paginate = list_to_paginate.filter(**filters).distinct()
 
     paginator = Paginator(list_to_paginate, 6)
     page = paginator.get_page(page_number)

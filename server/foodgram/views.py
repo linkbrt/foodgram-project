@@ -173,13 +173,13 @@ def recipe_edit(request: HttpRequest, username, slug):
 
 
 @decorators.login_required
-def get_requested_user_page(request, username):
-    user = get_object_or_404(User, username=username)
+def get_author_page(request, username):
+    author = get_object_or_404(User, username=username)
 
     filters = utils.get_filter_tags(request.GET.get('tags', ''))
     page, paginator = utils.paginate_request(
         filters=filters,
-        list_to_paginate=Recipe.objects.filter(author=user),
+        list_to_paginate=Recipe.objects.filter(author=author),
     )
 
     return render(
@@ -188,7 +188,7 @@ def get_requested_user_page(request, username):
         context={
             'page': page,
             'paginator': paginator,
-            'user': user,
+            'author': author,
             'all_tags': Tag.objects.all(),
         }
     )

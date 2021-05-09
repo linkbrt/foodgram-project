@@ -1,5 +1,5 @@
 {% load tags %}
-{% if user|in_follows:recipe.author %}
+{% if request.user|in_follows:author %}
     <button class="button button_style_light-blue button_size_subscribe" name="subscribe">Отписаться от автора</button>
 {% else %}
     <button class="button button_style_light-blue button_size_subscribe" name="subscribe" data-out>Подписаться на автора</button>
