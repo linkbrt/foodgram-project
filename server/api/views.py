@@ -63,6 +63,13 @@ class FollowViewSet(ApiBaseViewSet):
 
     def get_queryset(self):
         return Follow.objects.filter(user=self.request.user)
+    
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_queryset().filter(author__pk=kwargs['pk'])
+        if instance:
+            instance.delete()
+            return SUCCESS_RESPONSE
+        return BAS_RESPONSE
 
 
 class IngredientViewSet(viewsets.GenericViewSet):
