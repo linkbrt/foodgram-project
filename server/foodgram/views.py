@@ -16,7 +16,7 @@ def index(request: HttpRequest):
     page, paginator = utils.paginate_request(
         filters=filters,
         list_to_paginate=Recipe.objects.all(),
-        page_number=request.GET.get('page', '1'),
+        page_number=request.GET.get('page'),
     )
 
     response_context = {
@@ -68,6 +68,7 @@ def user_follows(request):
     page, paginator = utils.paginate_request(
         filters=None,
         list_to_paginate=request.user.follow.select_related('author'),
+        page_number=request.GET.get('page'),
     )
     return render(
         request=request,
@@ -87,6 +88,7 @@ def favorites(request):
     page, paginator = utils.paginate_request(
         filters=filters,
         list_to_paginate=favorites,
+        page_number=request.GET.get('page'),
     )
 
     return render(
@@ -180,6 +182,7 @@ def get_author_page(request, username):
     page, paginator = utils.paginate_request(
         filters=filters,
         list_to_paginate=Recipe.objects.filter(author=author),
+        page_number=request.GET.get('page'),
     )
 
     return render(
