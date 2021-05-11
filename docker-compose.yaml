@@ -16,8 +16,8 @@ services:
   web:
     build: .
     volumes:
-      - static:/code/static
-      - media:/code/media
+      - static:/var/html/static
+      - media:/var/html/media
     depends_on:
       - db
     env_file:
