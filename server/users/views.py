@@ -6,12 +6,12 @@ from django.core.mail import send_mail
 from django.http import request, response
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm, CustomAuthenticationForm, CustomPasswordResetForm
 from .models import Profile
 
 
 def login_view(request: request.HttpRequest):
-    form = forms.AuthenticationForm()
+    form = CustomAuthenticationForm()
     if request.method != 'POST':
         return render(
                 request=request,
@@ -81,7 +81,11 @@ def registration_user(request: request.HttpRequest):
 
 def password_reset(request: request.HttpRequest):
     if request.method != 'POST':
-        return render(request=request, template_name='password-reset.html')
+        return render(
+            request,
+            'password-reset.html',
+            {'form': CustomPasswordResetForm}
+        )
 
     email = request.POST.get('email')
     if not email:

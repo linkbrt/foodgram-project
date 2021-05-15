@@ -14,7 +14,7 @@
             {% include 'includes/card-inline.html' with recipe=recipe %}
         {% endfor %}
         {% if page %}
-        <button class="button button_style_blue">Скачать список</button>
+        <a href="{% url 'download' %}"><button class="button button_style_blue">Скачать список</button></a>
         {% endif %}
     </div>
 {% endblock %}

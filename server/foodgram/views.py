@@ -115,13 +115,12 @@ def new_recipe(request: HttpRequest):
         )
 
     form = RecipeForm(data=request.POST, files=request.FILES)
-    data = dict(request.POST)
+    data = dict(request.POST, author=request.user)
     if form.is_valid():
-        recipe = form.save(commit=False)
-        recipe.author = request.user
-        recipe.save()
-        utils.set_tags_to_recipe(recipe, data.get('tags'))
-        utils.set_ingredients_to_recipe(recipe, data.get('ingredients'))
+        recipe = form.save(
+            update=False,
+            data=data,
+        )
         recipe.save()
         return redirect(
             'single-recipe',
@@ -152,14 +151,13 @@ def recipe_edit(request: HttpRequest, username, slug):
 
     recipe_tags = {tag.name: 'checked' for tag in recipe.tags.all()}
 
+    data = dict(request.POST, author=request.user)
     if form.is_valid():
-        data = dict(request.POST)
-        utils.set_tags_to_recipe(recipe, data.get('tags'), update=True)
-        utils.set_ingredients_to_recipe(
-            recipe, data.get('ingredients'), update=True
+        recipe = form.save(
+            update=True,
+            data=data,
         )
-
-        recipe = form.save()
+        recipe.save()
         return redirect('single-recipe', username=username, slug=recipe.slug)
 
     return render(
@@ -174,7 +172,6 @@ def recipe_edit(request: HttpRequest, username, slug):
     )
 
 
-@decorators.login_required
 def get_author_page(request, username):
     author = get_object_or_404(User, username=username)
 
@@ -197,16 +194,19 @@ def get_author_page(request, username):
     )
 
 
-@decorators.login_required
 def get_single_recipe_page(request, username, slug):
     recipe = get_object_or_404(Recipe, slug=slug)
+    if request.user.is_authenticated:
+        purchase = request.user.purchases.filter(
+            recipe=recipe
+        ).exists()
+    else:
+        purchase = False
     return render(
         request=request,
         template_name='card_page.html',
         context={
             'recipe': recipe,
-            'user_purchase': request.user.purchases.filter(
-                recipe=recipe
-            ).exists(),
+            'user_purchase': purchase,
         }
     )

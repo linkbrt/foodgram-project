@@ -1,10 +1,12 @@
 {% load tags %}
-{% if recipe|in_favorites:user %}
-    <button class="button button_style_none" name="favorites">
-        <span class="icon-favorite icon-favorite_active"></span>
-    </button>
-{% else %}
-    <button class="button button_style_none" name="favorites" data-out>
-        <span class="icon-favorite"></span>
-    </button>
-{% endif %}
+<li class="single-card__item" style="list-style-type: none;">
+    {% if recipe|in_favorites:user %}
+        <button class="button button_style_none" name="favorites">
+            <span class="icon-favorite icon-favorite_active"></span>
+        </button>
+    {% else %}
+        <button class="button button_style_none" name="favorites" data-out>
+            <span class="icon-favorite"></span>
+        </button>
+    {% endif %}
+</li>

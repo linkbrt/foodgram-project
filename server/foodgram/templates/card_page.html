@@ -24,7 +24,12 @@
         <div class="single-card__items single-card__items_column">
             <p class="single-card__text"><span class="icon-time"></span> {{ recipe.cooking_time }} мин.</p>
             <ul class="single-card__items">
-                <li class="single-card__item"><p class="single-card__text"><span class="icon-user"></span> {{ recipe.author.username }} </p></li>
+                <li class="single-card__item">
+                    <p class="single-card__text">
+                        <span class="icon-user"></span>
+                        <a href="{% url 'user-page' recipe.author.username %}" style="color: black; text-decoration: none;">{{ recipe.author.username }}</a>
+                    </p>
+                </li>
                 {% if request.user == recipe.author %}
                     <li class="single-card__item">
                         <a style="margin-left: 2.5em" href="edit" class="single-card__text">Редактировать рецепт</a>
@@ -33,7 +38,7 @@
             </ul>
         </div>
         <ul class="single-card__items">
-            {% include 'includes/buttons/recipe_purchase_button.html' %}
+            {% include 'includes/buttons/single_recipe_purchase_button.html' %}
             {% include 'includes/buttons/subscribe_button.html' with author=recipe.author %}
         </ul>
         <div class="single-card__section">
@@ -52,7 +57,7 @@
 </div>
 {% endblock %}
 
-{% block static %}
+{% block scripts %}
 <script src="{% static './js/components/Purchases.js' %}"></script>
 <script src="{% static './js/components/Favorites.js' %}"></script>
 <script src="{% static './js/components/Subscribe.js' %}"></script>

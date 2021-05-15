@@ -1,3 +1,4 @@
+from django.http import request
 from api.models import Purchase, Favorite, Follow
 from django import template
 from django.utils.http import urlencode
@@ -29,16 +30,22 @@ def word_declination(**kwargs):
 
 @register.filter
 def in_purchases(recipe, user) -> bool:
+    if not user.is_authenticated:
+        return False
     return Purchase.objects.filter(user=user, recipe=recipe).exists()
 
 
 @register.filter
 def in_favorites(recipe, user) -> bool:
+    if not user.is_authenticated:
+        return False
     return Favorite.objects.filter(user=user, recipe=recipe).exists()
 
 
 @register.filter
 def in_follows(user, author) -> bool:
+    if not user.is_authenticated:
+        return False
     return Follow.objects.filter(user=user, author=author).exists()
 
 
@@ -46,15 +53,23 @@ def in_follows(user, author) -> bool:
 def url_params_replace(context, **kwargs):
     query: dict = context['request'].GET.dict()
     tags = query.get('tags')
+
+    if not kwargs.get('tag'):
+        query.update(kwargs)
+        return urlencode(query)
+
     if tags:
         tags = list(tags.split(','))
     else:
         tags = []
+
     tag = kwargs['tag']
     del kwargs['tag']
+
     if tag in tags:
         tags.remove(tag)
     else:
         tags.append(tag)
     query.update(kwargs, tags=','.join(tags))
+
     return urlencode(query)
