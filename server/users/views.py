@@ -1,17 +1,14 @@
-from django.conf import settings
 from django.contrib.auth import (authenticate, decorators, forms, login,
                                  logout, update_session_auth_hash)
-from django.contrib.auth.tokens import default_token_generator
-from django.core.mail import send_mail
 from django.http import request, response
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import CustomUserCreationForm, CustomAuthenticationForm, CustomPasswordResetForm
+from .forms import CustomUserCreationForm
 from .models import Profile
 
 
 def login_view(request: request.HttpRequest):
-    form = CustomAuthenticationForm()
+    form = forms.AuthenticationForm()
     if request.method != 'POST':
         return render(
                 request=request,
@@ -77,34 +74,3 @@ def registration_user(request: request.HttpRequest):
         login(request, new_user)
         return redirect('index')
     return render(request, 'user-registration.html', {'form': form})
-
-
-def password_reset(request: request.HttpRequest):
-    if request.method != 'POST':
-        return render(
-            request,
-            'password-reset.html',
-            {'form': CustomPasswordResetForm}
-        )
-
-    email = request.POST.get('email')
-    if not email:
-        return render(
-            request=request,
-            template_name='password-reset.html',
-            context={
-                'error': 'Введите email',
-            }
-        )
-
-    user = get_object_or_404(Profile, email=email)
-    code = default_token_generator.make_token(user)
-    user.set_password(code)
-    user.save()
-    send_mail(
-        subject='Confirmation code',
-        message=code,
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[email]
-    )
-    return render(request=request, template_name='password-reset.html')

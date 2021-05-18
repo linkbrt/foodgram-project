@@ -96,3 +96,7 @@ class IngredientRecipe(models.Model):
             ],
         verbose_name='Количество ингредиента'
     )
+
+    def __str__(self) -> str:
+        return f'{self.quantity}{self.ingredient.unit} \
+                 {self.ingredient.title} в {self.recipe.title}'

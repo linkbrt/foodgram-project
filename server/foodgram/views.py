@@ -1,13 +1,15 @@
 from django.contrib.auth import decorators
 from django.db.models.aggregates import Sum
 from django.http.request import HttpRequest
-from django.http.response import FileResponse
+from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .utils import utils
 
 from .forms import RecipeForm
 from .models import IngredientRecipe, Recipe, Tag, User
+
+import os
 
 
 def index(request: HttpRequest):
@@ -56,11 +58,16 @@ def download_shopping_list(request: HttpRequest):
             )
 
     filename = f'shop_list_{request.user.username}.txt'
-    with open(filename, 'wb') as shop_file:
+    with open(filename, 'w') as shop_file:
         for item in result:
-            result = item['ingredient__title'] + str(item['quantity'])
-            shop_file.write(bytes(result + '\n', 'utf8'))
-    return FileResponse(open(filename, 'rb'))
+            str_to_write = f"{item['ingredient__title']} {item['quantity']}\n"
+            shop_file.write(str_to_write)
+
+    with open(filename, 'rb') as file:
+        response = HttpResponse(file, content_type='text/txt')
+        response['Content-Disposition'] = f'attachment; filename={filename}'
+        os.remove(filename)
+        return response
 
 
 @decorators.login_required
@@ -114,14 +121,24 @@ def new_recipe(request: HttpRequest):
             }
         )
 
-    form = RecipeForm(data=request.POST, files=request.FILES)
-    data = dict(request.POST, author=request.user)
+    form = RecipeForm(
+        data=request.POST or None,
+        files=request.FILES or None
+    )
+
+    ingredients = request.POST.getlist('ingredients')
+    error: dict = utils.validate_igredients(ingredients)
+    if error:
+        form.add_error('ingredients', error)
+
+
     if form.is_valid():
-        recipe = form.save(
-            update=False,
-            data=data,
-        )
+        recipe = form.save(commit=False)
+        recipe.author = request.user
         recipe.save()
+        recipe.tags.set(form.cleaned_data['tags'])
+        utils.set_ingredients_to_recipe(recipe, ingredients)        
+
         return redirect(
             'single-recipe',
             username=recipe.author,
@@ -133,8 +150,6 @@ def new_recipe(request: HttpRequest):
         template_name='recipe_form.html',
         context={
             'form': form,
-            'data': data,
-            'form_tags': data.get('tags'),
             'all_tags': Tag.objects.all(),
         }
     )
@@ -145,19 +160,37 @@ def recipe_edit(request: HttpRequest, username, slug):
     recipe = get_object_or_404(Recipe, author__username=username, slug=slug)
     if request.user.username != username:
         return redirect('single-recipe', username=username, slug=slug)
-    form = RecipeForm(request.POST or None,
-                      files=request.FILES or None,
-                      instance=recipe)
-
+    
     recipe_tags = {tag.name: 'checked' for tag in recipe.tags.all()}
+    if request.method != 'POST':
+        return render(
+            request=request,
+            template_name='recipe_form.html',
+            context={
+                'form': RecipeForm(instance=recipe),
+                'recipe': recipe,
+                'recipe_tags': recipe_tags,
+                'all_tags': Tag.objects.all(),
+            }
+    )
 
-    data = dict(request.POST, author=request.user)
+    form = RecipeForm(
+        request.POST or None,
+        files=request.FILES or None,
+        instance=recipe
+    )
+
+    ingredients = request.POST.getlist('ingredients')
+    error: dict = utils.validate_igredients(ingredients)
+    if error:
+        form.add_error('ingredients', error)
+
     if form.is_valid():
-        recipe = form.save(
-            update=True,
-            data=data,
-        )
+        recipe = form.save(commit=False)
+        recipe.tags.set(form.cleaned_data['tags'])
         recipe.save()
+        utils.set_ingredients_to_recipe(recipe, ingredients, update=True)
+
         return redirect('single-recipe', username=username, slug=recipe.slug)
 
     return render(

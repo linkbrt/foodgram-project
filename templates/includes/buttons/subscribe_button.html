@@ -1,6 +1,8 @@
 {% load tags %}
-{% if request.user|in_follows:author %}
-    <button class="button button_style_light-blue button_size_subscribe" name="subscribe">Отписаться от автора</button>
-{% else %}
-    <button class="button button_style_light-blue button_size_subscribe" name="subscribe" data-out>Подписаться на автора</button>
+{% if request.user.is_authenticated and request.user != author %}
+    {% if request.user|in_follows:author %}
+        <button class="button button_style_light-blue button_size_subscribe" name="subscribe">Отписаться от автора</button>
+    {% else %}
+        <button class="button button_style_light-blue button_size_subscribe" name="subscribe" data-out>Подписаться на автора</button>
+    {% endif %}
 {% endif %}

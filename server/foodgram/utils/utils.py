@@ -24,27 +24,42 @@ def paginate_request(filters: Optional[dict], list_to_paginate: QuerySet, page_n
     return page, paginator
 
 
-def set_tags_to_recipe(instance: Recipe, tags, update: bool = False):
-    if update:
-        instance.tags.clear()
-    for tag in tags:
-        instance.tags.add(Tag.objects.get(name=tag))
+def validate_igredients(data: list):
+    errors = []
+    if not data:
+        return 'Обязательное поле'
+    
+    for item in data:
+        title = item.split('-')[0]
+        ingredient = Ingredient.objects.filter(title=title)
+
+        if not ingredient.exists():
+            errors.append(f'{item} неверное значение')
+
+    return ', '.join(errors)
 
 
-def set_ingredients_to_recipe(instance: Recipe, ingredients, update: bool = False):
-    if update:
+def ingredients_to_python(data: list) -> list:
+    result = []
+    for item in data:
+        title, quantity = item.split('-')
+        ingredient = Ingredient.objects.get(title=title)
+        result.append({'ingredient': ingredient, 'quantity': int(quantity)})
+    return result
+
+
+def set_ingredients_to_recipe(instance: Recipe, ingredients: list, **kwargs) -> None:
+    ingredients: list = ingredients_to_python(ingredients)
+    if kwargs.get('update'):
         IngredientRecipe.objects.filter(recipe=instance).delete()
     create_query = []
-    if not ingredients:
-        return
+
     for item in ingredients:
-        title, value = item.split('-')
-        ingredient = get_object_or_404(Ingredient, title=title)
         create_query.append(
             IngredientRecipe(
                 recipe=instance,
-                ingredient=ingredient,
-                quantity=int(value)
+                ingredient=item['ingredient'],
+                quantity=item['quantity'],
             )
         )
     IngredientRecipe.objects.bulk_create(create_query)

@@ -15,3 +15,8 @@ def prettify_help_text(help_text: str):
         result.append(item.replace('</li>', ''))
 
     return result
+
+@register.filter
+def add_class(field):
+    attrs = field.build_widget_attrs({'class': 'form__input'})
+    return field.as_widget(attrs=attrs)

@@ -33,7 +33,7 @@
                 <div class="tags">
                     {% for tag in all_tags %}
                         <div class="tags__item">
-                            <input type="checkbox" name="tags" id="tag" class="tags__checkbox tags__checkbox_style_{{ tag.style }}" {% if tag.name in recipe_tags %}checked{% endif %} value="{{ tag.name }}">
+                            <input type="checkbox" name="tags" id="tag" class="tags__checkbox tags__checkbox_style_{{ tag.style }}" {% if tag.name in recipe_tags %}checked{% endif %} value="{{ tag.pk }}">
                             <label for="tag" class="tags__label">{{ tag.name }}</label>
                         </div>
                     {% endfor %}
@@ -62,7 +62,7 @@
                     {% endfor %}
                 </div>
                 <span class="form__ingredient-link" id="addIng">Добавить ингредиент</span>
-                <span class="form__error">{{ form.ingredient.errors }}</span>
+                <span class="form__error">{{ form.ingredients.errors }}</span>
             </div>
         </div>
         <div class="form__group">

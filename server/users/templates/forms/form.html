@@ -3,7 +3,7 @@
     <div class="form__group">
         <label for="{{ field.id_for_label }}" class="form__label">{{ field.label }}</label>
         <div class="form__field-group">
-            {{ field }}
+            {{ field|add_class }}
             {% for text in field.help_text|prettify_help_text %}
                 <span class="form__input-info">{{ text }}</span>
             {% endfor %}
