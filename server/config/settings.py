@@ -162,10 +162,6 @@ REST_FRAMEWORK = {
 DOMAIN_NAME = 'yandex-foodgram-project.tk'
 DEFAULT_FROM_EMAIL = "danil.zhulkin@yandex.ru"
 
-# if DEBUG:
-#     EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
-#     EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
-# else:
 EMAIL_HOST = os.getenv("EMAIL_HOST")
 EMAIL_PORT = os.getenv("EMAIL_PORT")
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
