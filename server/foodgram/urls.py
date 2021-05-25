@@ -17,4 +17,6 @@ urlpatterns = [
          views.get_single_recipe_page, name='single-recipe'),
     path('<str:username>/<slug:slug>/edit/',
          views.recipe_edit, name='recipe-edit'),
+    path('<str:username>/<slug:slug>/delete/',
+         views.recipe_delete, name='recipe-delete'),
 ]

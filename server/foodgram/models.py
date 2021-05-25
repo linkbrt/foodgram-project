@@ -9,7 +9,7 @@ User = get_user_model()
 
 
 class Ingredient(models.Model):
-    title = models.SlugField(max_length=150, verbose_name='Название')
+    title = models.CharField(max_length=150, verbose_name='Название')
     unit = models.CharField(max_length=30, verbose_name='Единица измерения')
 
     def __str__(self) -> str:

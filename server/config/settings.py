@@ -18,7 +18,12 @@ if not SECRET_KEY:
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    '195.133.201.106',
+    'localhost',
+    'yandex-foodgram-project.tk',
+    'www.yandex-foodgram-project.tk',
+]
 
 INTERNAL_IPS = [
     '127.0.0.1',
@@ -150,10 +155,18 @@ REST_FRAMEWORK = {
     ),
 }
 
-DOMAIN_NAME = 'foodgram.com'
-DEFAULT_FROM_EMAIL = 'confirm@' + DOMAIN_NAME
+DOMAIN_NAME = 'yandex-foodgram-project.tk'
+DEFAULT_FROM_EMAIL = "danil.zhulkin@yandex.ru"
 
-EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
-EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
+if DEBUG:
+    EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+    EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
+else:
+    EMAIL_HOST = os.getenv("EMAIL_HOST")
+    EMAIL_PORT = os.getenv("EMAIL_PORT")
+    EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+    EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+    EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS")
+    EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL")
 
 PAGINATION_PAGE_SIZE = 12

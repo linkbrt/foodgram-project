@@ -52,7 +52,7 @@ def shopping_list(request: HttpRequest):
 @decorators.login_required
 def download_shopping_list(request: HttpRequest):
     result = IngredientRecipe.objects.values(
-            'ingredient__title'
+            'ingredient__title', 'ingredient__unit'
         ).annotate(
             quantity=Sum('quantity')
             )
@@ -60,7 +60,8 @@ def download_shopping_list(request: HttpRequest):
     filename = f'shop_list_{request.user.username}.txt'
     with open(filename, 'w') as shop_file:
         for item in result:
-            str_to_write = f"{item['ingredient__title']} {item['quantity']}\n"
+            str_to_write = (f"{item['ingredient__title']} - " +
+                            f"{item['quantity']} {item['ingredient__unit']}\n")
             shop_file.write(str_to_write)
 
     with open(filename, 'rb') as file:
@@ -203,6 +204,14 @@ def recipe_edit(request: HttpRequest, username, slug):
                 'all_tags': Tag.objects.all(),
             }
     )
+
+
+@decorators.login_required
+def recipe_delete(request, username, slug):
+    recipe = get_object_or_404(Recipe, slug=slug)
+    if request.user.username == username:
+        recipe.delete()
+    return redirect('index')
 
 
 def get_author_page(request, username):
