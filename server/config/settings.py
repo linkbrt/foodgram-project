@@ -16,7 +16,7 @@ if not SECRET_KEY:
     SECRET_KEY = get_random_secret_key()
     os.environ['SECRET_KEY'] = SECRET_KEY
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     '195.133.201.106',
