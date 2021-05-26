@@ -9,7 +9,7 @@ User = get_user_model()
 
 
 class Ingredient(models.Model):
-    title = models.CharField(max_length=150, verbose_name='Название')
+    title = models.CharField(max_length=150, verbose_name='Название', unique=True)
     unit = models.CharField(max_length=30, verbose_name='Единица измерения')
 
     def __str__(self) -> str:
@@ -17,7 +17,7 @@ class Ingredient(models.Model):
 
 
 class Tag(models.Model):
-    name = models.CharField(max_length=15, verbose_name='Название')
+    name = models.CharField(max_length=15, verbose_name='Название', unique=True)
     style = models.CharField(max_length=100, verbose_name='CSS стиль')
 
     def __str__(self) -> str:

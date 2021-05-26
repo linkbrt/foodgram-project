@@ -1,3 +1,3 @@
 # foodgram-project
 foodgram-project
-http://195.133.201.106:8080/
+www.yandex-foodgram-project.tk

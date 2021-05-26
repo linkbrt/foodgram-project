@@ -6,4 +6,4 @@ from typing import Any
 class CustomUserCreationForm(forms.UserCreationForm):
     class Meta(forms.UserCreationForm):
         model = Profile
-        fields = ('email', 'username', 'first_name')
+        fields = ('first_name', 'username', 'email')

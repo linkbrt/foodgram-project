@@ -8,6 +8,7 @@
                 <span class="form__input-info">{{ text }}</span>
             {% endfor %}
             <span class="form__error">{{ field.errors }}</span>
+            {% ifchanged %}<span class="form__error">{{ login_error }}</span>{% endifchanged %}
         </div>
     </div>
 {% endfor %}
